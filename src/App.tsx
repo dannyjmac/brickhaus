@@ -32,7 +32,7 @@ function App() {
     });
 
     map.current.on("load", function () {
-      data.features.map((item, index) => {
+      data.features.forEach((item, index) => {
         console.log({ item });
         map.current.addSource(`tn-${index}`, {
           type: "geojson",
