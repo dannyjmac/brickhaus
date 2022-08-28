@@ -19,6 +19,8 @@ function App() {
   const [mapLoaded, setMapLoaded] = useState(false);
   const [renderedDistricts, setRenderedDistricts] = useState<string[]>([]);
 
+  const [activeSection, setActiveSection] = useState<any>("tn");
+
   const applyAreas = () => {
     Object.keys(areas).forEach((area: string) => {
       // @ts-ignore
@@ -34,7 +36,9 @@ function App() {
           id: `${area}-layer`,
           type: "fill",
           source: area,
-          tolerance: 0,
+          tolerance: 5,
+          minzoom: 2,
+          maxzoom: 10,
           paint: {
             "fill-color": getRandomColor(),
             "fill-opacity": 0.4,
@@ -46,15 +50,13 @@ function App() {
     });
   };
 
+  // Possibly deprecated
   const applyDistricts = () => {
     filteredDistricts.forEach((district: string) => {
       // @ts-ignore
       // Add pertinent layers
       districts[district].features.forEach((item: any, index: any) => {
         if (map.current.getSource(`${district}-${index}`)) return;
-        const currentlyRendered = [...renderedDistricts];
-        currentlyRendered.push(`${district}-${index}`);
-        setRenderedDistricts(currentlyRendered);
         map.current.addSource(`${district}-${index}`, {
           type: "geojson",
           data: item,
@@ -64,9 +66,9 @@ function App() {
           id: `${district}-layer-${index}`,
           type: "fill",
           source: `${district}-${index}`,
-          minzoom: 9,
-          maxzoom: 15,
           tolerance: 0,
+          minzoom: 10,
+          maxzoom: 15,
           paint: {
             "fill-color": getRandomColor(),
             "fill-opacity": 0.4,
@@ -102,14 +104,14 @@ function App() {
       setFilteredDistricts(filterDistricts(e.target.transform._center));
     });
 
-    map.current.on("load", () => setMapLoaded(true));
+    map.current.on("load", () => {
+      setMapLoaded(true);
+    });
 
     map.current.on("zoom", (e: any) =>
       handleOnZoom(e.target.transform.tileZoom)
     );
   });
-
-  console.log(mapLoaded);
 
   useEffect(() => {
     if (!mapLoaded) return;

@@ -49,6 +49,7 @@ import hx from "./HX.json";
 import ig from "./IG.json";
 import ip from "./IP.json";
 import iv from "./IV.json";
+import ka from "./KA.json";
 import kt from "./KT.json";
 import kw from "./KW.json";
 import ky from "./KY.json";
@@ -170,6 +171,7 @@ export {
   ig,
   ip,
   iv,
+  ka,
   kt,
   kw,
   ky,
