@@ -13,8 +13,7 @@ export const filterRegions = (c: any) => {
       { latitude: c.lat, longitude: c.lng },
       { latitude: region.coordinates[1], longitude: region.coordinates[0] }
     );
-
-    if (distance < 80000) return true;
+    if (distance < 40000) return true;
   });
 
   return filtered.map((r) => r.key);

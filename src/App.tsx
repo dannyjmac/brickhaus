@@ -14,18 +14,21 @@ function App() {
   // const [zoom, setZoom] = useState<[number]>([6]);
   const [regionz, setRegionz] = useState<any>(["tn"]);
   const [mapLoaded, setMapLoaded] = useState(false);
+  const [renderedRegions, setRenderedRegions] = useState<string[]>([]);
 
   const addSourcesLayers = (region: any, index: any, item: any) => {
     map.current.addSource(`${region}-${index}`, {
       type: "geojson",
       data: item,
     });
+
     map.current.addLayer({
       id: `${region}-layer-${index}`,
       type: "fill",
       source: `${region}-${index}`,
       minzoom: 9,
-      tolerance: 1,
+      maxzoom: 15,
+      tolerance: 0,
       paint: {
         "fill-color": getRandomColor(),
         "fill-opacity": 0.4,
@@ -35,6 +38,14 @@ function App() {
     });
   };
 
+  const handleOnZoom = (zoom: any) => {
+    if (zoom < 9) {
+      renderedRegions.forEach((region: any) => {
+        return map.current.removeLayer(region);
+      });
+    }
+  };
+
   useEffect(() => {
     if (map.current) return;
 
@@ -42,6 +53,7 @@ function App() {
       container: mapContainer.current,
       style: "mapbox://styles/mapbox/streets-v11",
       zoom: [8],
+      maxZoom: 14,
       center,
     });
 
@@ -51,7 +63,13 @@ function App() {
     });
 
     map.current.on("load", () => setMapLoaded(true));
+
+    map.current.on("zoom", (e: any) =>
+      handleOnZoom(e.target.transform.tileZoom)
+    );
   });
+
+  console.log(map?.current?.areTilesLoaded());
 
   useEffect(() => {
     if (!mapLoaded) return;
@@ -60,6 +78,9 @@ function App() {
       // Add pertinent layers
       regions[region].features.forEach((item: any, index: any) => {
         if (map.current.getSource(`${region}-${index}`)) return;
+        const currentlyRendered = [...renderedRegions];
+        currentlyRendered.push(`${region}-${index}`);
+        setRenderedRegions(currentlyRendered);
         addSourcesLayers(region, index, item);
       });
     });
