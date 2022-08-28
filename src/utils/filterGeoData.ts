@@ -1,17 +1,17 @@
-import * as regions from "../regions";
+import * as districts from "../districts";
 import { getDistance } from "geolib";
 import center from "@turf/center";
 
-const allCenters = Object.keys(regions).map((key) => {
+const allCenters = Object.keys(districts).map((key) => {
   // @ts-ignore
-  return { key, coordinates: center(regions[key]).geometry.coordinates };
+  return { key, coordinates: center(districts[key]).geometry.coordinates };
 });
 
-export const filterRegions = (c: any) => {
-  const filtered = allCenters.filter((region) => {
+export const filterDistricts = (c: any) => {
+  const filtered = allCenters.filter((district) => {
     const distance = getDistance(
       { latitude: c.lat, longitude: c.lng },
-      { latitude: region.coordinates[1], longitude: region.coordinates[0] }
+      { latitude: district.coordinates[1], longitude: district.coordinates[0] }
     );
     if (distance < 40000) return true;
   });
