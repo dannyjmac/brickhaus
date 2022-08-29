@@ -15,7 +15,7 @@ function App() {
   const [filteredDistricts, setFilteredDistricts] = useState<any>(["tn"]);
   const [mapLoaded, setMapLoaded] = useState(false);
 
-  const [selectedArea, setSelectedArea] = useState<any>(null);
+  // const [selectedArea, setSelectedArea] = useState<any>(null);
 
   const applyAreas = () => {
     Object.keys(areas).forEach((area: string) => {
@@ -44,7 +44,7 @@ function App() {
         });
 
         map.current.on("click", `${area}-layer`, () => {
-          setSelectedArea(area);
+          // setSelectedArea(area);
         });
       });
     });
