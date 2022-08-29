@@ -109,7 +109,7 @@ function App() {
     if (!mapLoaded) return;
     applyAreas();
     applyDistricts();
-  }, [mapLoaded, filteredDistricts]);
+  }, [mapLoaded, filteredDistricts, applyDistricts, applyAreas]);
 
   return <div style={{ height: "100vh", width: "100vw" }} ref={mapContainer} />;
 }
