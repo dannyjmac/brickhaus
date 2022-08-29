@@ -16,6 +16,7 @@ export const filterDistricts = (c: any) => {
       { latitude: district.coordinates[1], longitude: district.coordinates[0] }
     );
     if (distance < 40000) return true;
+    return false;
   });
 
   return filtered.map((r) => r.key);
