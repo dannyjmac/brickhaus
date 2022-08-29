@@ -7,19 +7,15 @@ import * as areas from "./areas";
 import * as districts from "./districts";
 import { filterDistricts } from "./utils/filterGeoData";
 
-// @ts-ignore
-
 const center = [0.557299, 50.857839];
 
 function App() {
   const mapContainer = useRef(null);
   const map = useRef<any>(null);
-  // const [zoom, setZoom] = useState<[number]>([6]);
   const [filteredDistricts, setFilteredDistricts] = useState<any>(["tn"]);
   const [mapLoaded, setMapLoaded] = useState(false);
-  const [renderedDistricts, setRenderedDistricts] = useState<string[]>([]);
 
-  const [activeSection, setActiveSection] = useState<any>("tn");
+  const [selectedArea, setSelectedArea] = useState<any>(null);
 
   const applyAreas = () => {
     Object.keys(areas).forEach((area: string) => {
@@ -46,11 +42,14 @@ function App() {
             "fill-outline-color": "black",
           },
         });
+
+        map.current.on("click", `${area}-layer`, () => {
+          setSelectedArea(area);
+        });
       });
     });
   };
 
-  // Possibly deprecated
   const applyDistricts = () => {
     filteredDistricts.forEach((district: string) => {
       // @ts-ignore
@@ -80,14 +79,6 @@ function App() {
     });
   };
 
-  const handleOnZoom = (zoom: any) => {
-    if (zoom < 9) {
-      renderedDistricts.forEach((district: any) => {
-        return map.current.removeLayer(district);
-      });
-    }
-  };
-
   useEffect(() => {
     if (map.current) return;
 
@@ -108,9 +99,10 @@ function App() {
       setMapLoaded(true);
     });
 
-    map.current.on("zoom", (e: any) =>
-      handleOnZoom(e.target.transform.tileZoom)
-    );
+    // Use for cleaning up districts
+    // map.current.on("zoom", (e: any) =>
+    //   handleOnZoom(e.target.transform.tileZoom)
+    // );
   });
 
   useEffect(() => {

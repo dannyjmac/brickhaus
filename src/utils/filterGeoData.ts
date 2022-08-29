@@ -7,7 +7,9 @@ const allCenters = Object.keys(districts).map((key) => {
   return { key, coordinates: center(districts[key]).geometry.coordinates };
 });
 
+// A potential algo for performance
 export const filterDistricts = (c: any) => {
+  console.log("called");
   const filtered = allCenters.filter((district) => {
     const distance = getDistance(
       { latitude: c.lat, longitude: c.lng },
@@ -18,3 +20,5 @@ export const filterDistricts = (c: any) => {
 
   return filtered.map((r) => r.key);
 };
+
+// Todo - Other potential algorithim - get which area is currently at the centre and only show the districts for that when zoomed in
