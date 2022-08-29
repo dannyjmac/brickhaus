@@ -109,7 +109,8 @@ function App() {
     if (!mapLoaded) return;
     applyAreas();
     applyDistricts();
-  }, [mapLoaded, filteredDistricts, applyDistricts, applyAreas]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mapLoaded, filteredDistricts]);
 
   return <div style={{ height: "100vh", width: "100vw" }} ref={mapContainer} />;
 }
