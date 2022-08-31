@@ -7,15 +7,15 @@ import * as areas from "./areas";
 import * as districts from "./districts";
 import { filterDistricts } from "./utils/filterGeoData";
 
-const center = [0.557299, 50.857839];
+const center = [-0.118092, 51.509865];
 
 function App() {
   const mapContainer = useRef(null);
   const map = useRef<any>(null);
-  const [filteredDistricts, setFilteredDistricts] = useState<any>(["tn"]);
+  const [filteredDistricts, setFilteredDistricts] = useState<string[]>([]);
   const [mapLoaded, setMapLoaded] = useState(false);
 
-  // const [selectedArea, setSelectedArea] = useState<any>(null);
+  const [selectedArea, setSelectedArea] = useState<any>(null);
 
   const applyAreas = () => {
     Object.keys(areas).forEach((area: string) => {
@@ -37,46 +37,66 @@ function App() {
           maxzoom: 10,
           paint: {
             "fill-color": getRandomColor(),
-            "fill-opacity": 0.4,
+            "fill-opacity": 0.5,
             "fill-antialias": true,
             "fill-outline-color": "black",
           },
         });
 
-        map.current.on("click", `${area}-layer`, () => {
-          // setSelectedArea(area);
+        map.current.on("mouseenter", `${area}-layer`, (e: any) => {
+          map.current.setPaintProperty(`${area}-layer`, "fill-opacity", 0.6);
+        });
+
+        map.current.on("mouseleave", `${area}-layer`, () => {
+          map.current.setPaintProperty(`${area}-layer`, "fill-opacity", 0.3);
+        });
+
+        map.current.on("click", `${area}-layer`, async () => {
+          Object.keys(areas).forEach((area2: string) => {
+            if (area2 !== area) {
+              map.current.setLayoutProperty(
+                `${area2}-layer`,
+                "visibility",
+                "visible"
+              );
+            }
+          });
+          await map.current.setLayoutProperty(
+            `${area}-layer`,
+            "visibility",
+            "none"
+          );
         });
       });
     });
   };
 
   const applyDistricts = () => {
-    filteredDistricts.forEach((district: string) => {
-      // @ts-ignore
-      // Add pertinent layers
-      districts[district].features.forEach((item: any, index: any) => {
-        if (map.current.getSource(`${district}-${index}`)) return;
-        map.current.addSource(`${district}-${index}`, {
-          type: "geojson",
-          data: item,
-        });
-
-        map.current.addLayer({
-          id: `${district}-layer-${index}`,
-          type: "fill",
-          source: `${district}-${index}`,
-          tolerance: 0,
-          minzoom: 10,
-          maxzoom: 15,
-          paint: {
-            "fill-color": getRandomColor(),
-            "fill-opacity": 0.4,
-            "fill-antialias": true,
-            "fill-outline-color": "black",
-          },
-        });
-      });
-    });
+    // filteredDistricts.forEach((district: string) => {
+    //   // @ts-ignore
+    //   // Add pertinent layers
+    //   districts[district].features.forEach((item: any, index: any) => {
+    //     if (map.current.getSource(`${district}-${index}`)) return;
+    //     map.current.addSource(`${district}-${index}`, {
+    //       type: "geojson",
+    //       data: item,
+    //     });
+    //     map.current.addLayer({
+    //       id: `${district}-layer-${index}`,
+    //       type: "fill",
+    //       source: `${district}-${index}`,
+    //       tolerance: 0,
+    //       minzoom: 10,
+    //       maxzoom: 15,
+    //       paint: {
+    //         "fill-color": getRandomColor(),
+    //         "fill-opacity": 0.4,
+    //         "fill-antialias": true,
+    //         "fill-outline-color": "black",
+    //       },
+    //     });
+    //   });
+    // });
   };
 
   useEffect(() => {
