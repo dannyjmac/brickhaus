@@ -15,7 +15,7 @@ function App() {
   const [filteredDistricts, setFilteredDistricts] = useState<string[]>([]);
   const [mapLoaded, setMapLoaded] = useState(false);
 
-  const [selectedArea, setSelectedArea] = useState<any>(null);
+  const [activeDistrict, setActiveDistrict] = useState<any>("");
 
   const applyAreas = () => {
     Object.keys(areas).forEach((area: string) => {
@@ -32,9 +32,9 @@ function App() {
           id: `${area}-layer`,
           type: "fill",
           source: area,
-          tolerance: 5,
+          tolerance: 0,
           minzoom: 2,
-          maxzoom: 10,
+          // maxzoom: 10,
           paint: {
             "fill-color": getRandomColor(),
             "fill-opacity": 0.5,
@@ -61,42 +61,58 @@ function App() {
               );
             }
           });
+
           await map.current.setLayoutProperty(
             `${area}-layer`,
             "visibility",
             "none"
           );
+          applyDistricts(area);
         });
       });
     });
   };
 
-  const applyDistricts = () => {
-    // filteredDistricts.forEach((district: string) => {
-    //   // @ts-ignore
-    //   // Add pertinent layers
-    //   districts[district].features.forEach((item: any, index: any) => {
-    //     if (map.current.getSource(`${district}-${index}`)) return;
-    //     map.current.addSource(`${district}-${index}`, {
-    //       type: "geojson",
-    //       data: item,
-    //     });
-    //     map.current.addLayer({
-    //       id: `${district}-layer-${index}`,
-    //       type: "fill",
-    //       source: `${district}-${index}`,
-    //       tolerance: 0,
-    //       minzoom: 10,
-    //       maxzoom: 15,
-    //       paint: {
-    //         "fill-color": getRandomColor(),
-    //         "fill-opacity": 0.4,
-    //         "fill-antialias": true,
-    //         "fill-outline-color": "black",
-    //       },
-    //     });
-    //   });
-    // });
+  const applyDistricts = (area: string) => {
+    if (map.current.getSource(`tn-1`)) {
+      console.log("found one");
+    }
+
+    Object.keys(areas).forEach((currentArea) => {
+      // @ts-ignore
+      if (districts[currentArea]?.features) {
+        // @ts-ignore
+        districts[currentArea].features.forEach((item: any, index: any) => {
+          if (map.current.getSource(`${currentArea}-${index}`)) {
+            map.current.removeLayer(`${currentArea}-layer-${index}`);
+            map.current.removeSource(`${currentArea}-${index}`);
+          }
+        });
+      }
+    });
+
+    // @ts-ignore
+    districts[area].features.forEach((item: any, index: any) => {
+      if (map.current.getSource(`${area}-${index}`)) return;
+      map.current.addSource(`${area}-${index}`, {
+        type: "geojson",
+        data: item,
+      });
+      map.current.addLayer({
+        id: `${area}-layer-${index}`,
+        type: "fill",
+        source: `${area}-${index}`,
+        tolerance: 0,
+        paint: {
+          "fill-color": getRandomColor(),
+          "fill-opacity": 0.4,
+          "fill-antialias": true,
+          "fill-outline-color": "black",
+        },
+      });
+    });
+
+    setActiveDistrict(area);
   };
 
   useEffect(() => {
@@ -128,7 +144,6 @@ function App() {
   useEffect(() => {
     if (!mapLoaded) return;
     applyAreas();
-    applyDistricts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mapLoaded, filteredDistricts]);
 
