@@ -2,7 +2,10 @@ export const text = {
   "text-field": [
     "format",
     ["upcase", ["get", "district"]],
-    { "font-scale": 0.8 },
+    {
+      "font-scale": 1,
+      "text-color": "grey",
+    },
   ],
   "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
 };

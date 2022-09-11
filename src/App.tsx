@@ -1,65 +1,64 @@
-import "mapbox-gl/dist/mapbox-gl.css";
+import Map from "./components/Map";
+import { useState } from "react";
+import Sidebar from "./components/Sidebar";
 // @ts-ignore
-import mapboxgl from "!mapbox-gl"; // eslint-disable-line import/no-webpack-loader-syntax
-import { useRef, useEffect } from "react";
-import { areaOpacity, postcodeLabels, fills } from "./utils/map";
+import styled from "styled-components";
+import { motion } from "framer-motion";
 
-const center = [-0.118092, 51.509865];
+const Container = styled(motion.div)`
+  background-color: #111518;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  box-sizing: border-box;
+  box-shadow: 0 16px 32px -16px black;
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+  touch-action: none;
+`;
+const HamburgerContainer = styled(motion.div)`
+  border-radius: 32px;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  margin: 24px;
+  cursor: pointer;
+  z-index: 2;
+  /* -webkit-tap-highlight-color: transparent; */
+`;
+const Text = styled(motion.p)`
+  font-family: Caviar Dreams;
+  color: #fff;
+  user-select: none;
+  margin: 64px auto;
+`;
 
-function App() {
-  const mapContainer = useRef(null);
-  const map = useRef<any>(null);
+const App = () => {
+  const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
 
-  useEffect(() => {
-    if (map.current) return;
-
-    map.current = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: "mapbox://styles/dannyjmac/cl7wa5w51008e14kbusgohndx",
-      zoom: [8],
-      maxZoom: 14,
-      center,
-    });
-
-    let hovered: any = null;
-
-    map.current.on("mousemove", "postcodes", (e: any) => {
-      if (hovered !== null) {
-        map.current.setFeatureState(
-          {
-            source: "composite",
-            sourceLayer: "postcodes",
-            id: hovered,
-          },
-          {
-            hover: false,
-          }
-        );
-      }
-      if (e.features) {
-        map.current.setFeatureState(
-          {
-            source: "composite",
-            sourceLayer: "postcodes",
-            id: e.features[0].id,
-          },
-          {
-            hover: true,
-          }
-        );
-        hovered = e.features[0].id;
-      }
-    });
-
-    map.current.on("load", () => {
-      map.current.setPaintProperty("postcodes", "fill-color", fills);
-      map.current.setPaintProperty("postcodes", "fill-outline-color", "black");
-      map.current.setPaintProperty("postcodes", "fill-opacity", areaOpacity);
-      map.current.addLayer(postcodeLabels);
-    });
-  });
-
-  return <div style={{ height: "100vh", width: "100vw" }} ref={mapContainer} />;
-}
+  const handleDistrictClick = (district: string) => {
+    setSidebarOpen(true);
+  };
+  return (
+    <Container>
+      <Sidebar setOpen={setSidebarOpen} open={sidebarOpen}>
+        <HamburgerContainer
+          onTap={() => {
+            setSidebarOpen(false);
+          }}
+        >
+          CLOSE
+        </HamburgerContainer>
+        <Text>Hello there...</Text>
+      </Sidebar>
+      <Map handleDistrictClick={handleDistrictClick} />
+    </Container>
+  );
+};
 
 export default App;
