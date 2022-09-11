@@ -1,9 +1,10 @@
 import Map from "./components/Map";
+import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import Sidebar from "./components/Sidebar";
-// @ts-ignore
 import styled from "styled-components";
 import { motion } from "framer-motion";
+import { useStore } from "./store";
 
 const Container = styled(motion.div)`
   background-color: #111518;
@@ -29,7 +30,6 @@ const HamburgerContainer = styled(motion.div)`
   margin: 24px;
   cursor: pointer;
   z-index: 2;
-  /* -webkit-tap-highlight-color: transparent; */
 `;
 const Text = styled(motion.p)`
   font-family: Caviar Dreams;
@@ -38,12 +38,16 @@ const Text = styled(motion.p)`
   margin: 64px auto;
 `;
 
-const App = () => {
+const App = observer(() => {
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
+
+  const { salesStore } = useStore();
 
   const handleDistrictClick = (district: string) => {
     setSidebarOpen(true);
+    salesStore.helloWorld();
   };
+
   return (
     <Container>
       <Sidebar setOpen={setSidebarOpen} open={sidebarOpen}>
@@ -59,6 +63,6 @@ const App = () => {
       <Map handleDistrictClick={handleDistrictClick} />
     </Container>
   );
-};
+});
 
 export default App;
