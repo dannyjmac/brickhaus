@@ -26,7 +26,7 @@ const Sidebar = ({ children, open }: any) => {
 
   useEffect(() => {
     !open ? x.set(-width) : x.set(0);
-  }, [open]);
+  }, [open, x]);
 
   return (
     <Container>
